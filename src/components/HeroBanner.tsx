@@ -6,17 +6,7 @@ interface HeroBannerProps {
   settings?: StoreSettings;
 }
 
-const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-  </svg>
-);
-
-export const HeroBanner: React.FC<HeroBannerProps> = ({ settings }) => {
-  const instagramUrl = settings?.instagramUrl || 'https://www.instagram.com/heitormaker3d/';
-
+export const HeroBanner: React.FC<HeroBannerProps> = () => {
   return (
     <div className="relative overflow-hidden rounded-3xl bg-slate-900 border-4 border-amber-800/70 p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl text-white">
       {/* Luzes sutis de fundo */}
@@ -65,21 +55,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ settings }) => {
               Aqui, você encontra modelos 3D testados e aprovados por mim, feitos para brincar, presentear, organizar e aprender. Espero que minhas criações tragam um pouquinho de diversão para o seu dia!
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <p className="font-bold text-white text-xs sm:text-sm">
-                Obrigado por apoiar o meu trabalho e o meu pequeno negócio!
-              </p>
-
-              <a
-                href={instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-xs shadow-lg hover:scale-105 transition-transform"
-              >
-                <InstagramIcon className="w-4 h-4" />
-                <span>Instagram @heitormaker3d 📸</span>
-              </a>
-            </div>
+            <p className="font-bold text-white text-xs sm:text-sm pt-1">
+              Obrigado por apoiar o meu trabalho e o meu pequeno negócio!
+            </p>
           </div>
 
         </div>

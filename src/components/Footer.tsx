@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, MessageSquare, ShieldCheck, GitBranch } from 'lucide-react';
+import { Heart, MessageSquare, ShieldCheck } from 'lucide-react';
 import type { StoreSettings } from '../types';
 
 interface FooterProps {
@@ -22,7 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
     <footer className="mt-16 w-full bg-white border-t border-slate-200 text-slate-500 text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
         
-        {/* COLUNA 1: LOGO ÚNICA E BADGE SEGURANÇA */}
+        {/* COLUNA 1: LOGO ÚNICA E NOME */}
         <div className="space-y-3 md:col-span-2">
           <div className="flex items-center gap-3">
             <img
@@ -38,7 +38,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
 
           <div className="flex items-center gap-2 text-slate-500 font-bold text-[11px] pt-1">
             <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-            <span>Painel Administrativo com Criptografia Segura</span>
+            <span>Painel Administrativo Seguro</span>
           </div>
         </div>
 
@@ -77,17 +77,6 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
                 Painel Admin dos Pais / Maker 🔒
               </button>
             </li>
-            <li>
-              <a
-                href="https://github.com/michelroger/h-maker"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-slate-900 transition-colors flex items-center gap-1.5"
-              >
-                <GitBranch className="w-3.5 h-3.5" />
-                <span>Hospedado no GitHub Pages</span>
-              </a>
-            </li>
           </ul>
         </div>
 
@@ -96,7 +85,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px] font-medium">
         <p>© {new Date().getFullYear()} {settings.storeName}. Todos os direitos reservados.</p>
         <p className="flex items-center gap-1">
-          Feito com <Heart className="w-4 h-4 text-cyan-600 fill-cyan-600" /> pelo H-Maker (7 anos) com a ajuda do papai 🚀
+          Feito com <Heart className="w-4 h-4 text-red-500 fill-red-500 inline" /> pelo H-Maker (7 anos) com a ajuda do papai 🚀
         </p>
       </div>
     </footer>
