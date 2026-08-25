@@ -9,12 +9,22 @@ interface HeaderProps {
   settings: StoreSettings;
 }
 
+const InstagramIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+  </svg>
+);
+
 export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
   settings,
 }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+
+  const instagramUrl = settings.instagramUrl || 'https://www.instagram.com/heitormaker3d/';
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-xl border-b border-slate-200 transition-all shadow-xs">
@@ -54,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* BOTÃO WHATSAPP E BUSCA MOBILE */}
+        {/* BOTÕES INSTAGRAM, WHATSAPP E BUSCA MOBILE */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Botão de Busca Mobile */}
           <button
@@ -65,6 +75,19 @@ export const Header: React.FC<HeaderProps> = ({
             <Search className="w-4 h-4 text-cyan-600" />
           </button>
 
+          {/* Botão Instagram Oficial */}
+          <a
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs font-bold shadow-md shadow-pink-200 transition-all hover:scale-105"
+            title="Instagram @heitormaker3d"
+          >
+            <InstagramIcon className="w-4 h-4" />
+            <span className="hidden sm:inline">@heitormaker3d</span>
+          </a>
+
+          {/* Botão WhatsApp */}
           <a
             href={`https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}`}
             target="_blank"
@@ -72,8 +95,8 @@ export const Header: React.FC<HeaderProps> = ({
             className="flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-200 transition-all hover:scale-105"
           >
             <MessageSquare className="w-4 h-4" />
-            <span className="hidden sm:inline">Falar no WhatsApp</span>
-            <span className="sm:hidden">WhatsApp</span>
+            <span className="hidden lg:inline">Falar no WhatsApp</span>
+            <span className="lg:hidden">WhatsApp</span>
           </a>
         </div>
 

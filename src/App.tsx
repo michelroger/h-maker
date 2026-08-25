@@ -46,12 +46,14 @@ export const App: React.FC = () => {
 
   const [settings, setSettings] = useState<StoreSettings>(() => {
     const defaultSettings: StoreSettings = {
-      whatsappNumber: '5511999999999',
-      storeName: 'H-Maker 3D Studio',
+      whatsappNumber: '5518996144914',
+      storeName: 'H-Maker',
       customMessageTemplate: '',
       adminPinHash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4',
       adminSalt: 'HMAKER_SALT_2026',
       currencySymbol: 'R$',
+      instagramHandle: '@heitormaker3d',
+      instagramUrl: 'https://www.instagram.com/heitormaker3d/',
       customMaterials: [
         { id: 'pla', name: 'PLA Ecológico', priceMultiplier: 1.0 },
         { id: 'silk', name: 'Silk Arco-Íris', priceMultiplier: 1.2 },
@@ -69,7 +71,7 @@ export const App: React.FC = () => {
           return {
             ...defaultSettings,
             ...decrypted,
-            storeName: decrypted.storeName.includes('M3D') ? 'H-Maker 3D Studio' : decrypted.storeName,
+            storeName: decrypted.storeName.includes('M3D') ? 'H-Maker' : decrypted.storeName,
             customMaterials: decrypted.customMaterials || defaultSettings.customMaterials,
           };
         }
@@ -149,7 +151,7 @@ export const App: React.FC = () => {
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
-        <HeroBanner />
+        <HeroBanner settings={settings} />
 
         <CategoryFilter
           selectedCategory={selectedCategory}

@@ -95,6 +95,8 @@ export interface StoreSettings {
   currencySymbol: string;
   customMaterials: CustomMaterial[];
   globalColors?: ProductColor[]; // Paleta global de cores cadastradas na loja
+  instagramHandle?: string;
+  instagramUrl?: string;
   githubRepo?: string;
   githubToken?: string;
 }
