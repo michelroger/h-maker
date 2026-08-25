@@ -13,12 +13,26 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         
         <div className="space-y-3 md:col-span-2">
-          <div className="flex items-center gap-2.5">
-            <img src="./logo.png" alt="H-Maker Logo" className="w-10 h-10 object-contain drop-shadow-xs" />
-            <span className="text-xl font-black text-slate-900 tracking-tight">{settings.storeName}</span>
+          <div className="flex items-center gap-3">
+            <img
+              src="./logo-badge.png"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = './logo.png';
+              }}
+              alt="Emblema H-Maker"
+              className="w-12 h-12 object-contain drop-shadow-xs"
+            />
+            <img
+              src="./logo-text.png"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = './logo.png';
+              }}
+              alt="H-MAKER"
+              className="h-8 w-auto object-contain drop-shadow-xs"
+            />
           </div>
 
-          <p className="text-slate-600 max-w-md font-medium leading-relaxed">
+          <p className="text-slate-600 max-w-md font-medium leading-relaxed pt-1">
             Vitrine e gerador de orçamentos de impressões 3D sob medida pelo pequeno H-Maker (7 anos). 
             Brinquedos articulados, chaveiros com nome e decorações incríveis!
           </p>
@@ -47,7 +61,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
           <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Área de Controle</h4>
           <ul className="space-y-2 font-medium">
             <li>
-              <button onClick={onOpenAdmin} className="text-indigo-600 hover:text-indigo-700 font-bold transition-colors">
+              <button onClick={onOpenAdmin} className="text-cyan-600 hover:text-cyan-700 font-bold transition-colors">
                 Painel Admin dos Pais / Maker 🔒
               </button>
             </li>
@@ -70,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px] font-medium">
         <p>© {new Date().getFullYear()} {settings.storeName}. Todos os direitos reservados.</p>
         <p className="flex items-center gap-1">
-          Feito com <Heart className="w-4 h-4 text-indigo-600 fill-indigo-600" /> pelo H-Maker (7 anos) com a ajuda do papai 🚀
+          Feito com <Heart className="w-4 h-4 text-cyan-600 fill-cyan-600" /> pelo H-Maker (7 anos) com a ajuda do papai 🚀
         </p>
       </div>
     </footer>

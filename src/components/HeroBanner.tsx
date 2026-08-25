@@ -1,216 +1,110 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Rocket, Smile, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-
-interface ShowcaseSlide {
-  id: string;
-  image: string;
-  title: string;
-  category: string;
-  price: string;
-}
-
-const SHOWCASE_SLIDES: ShowcaseSlide[] = [
-  {
-    id: '1',
-    image: './hmaker-dragon.jpg',
-    title: 'Dragão Arco-Íris Articulado 3D',
-    category: 'Brinquedo Articulado 🐉',
-    price: 'R$ 65,00',
-  },
-  {
-    id: '2',
-    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
-    title: 'T-Rex Flexível 3D',
-    category: 'Dinossauro 🦖',
-    price: 'R$ 55,00',
-  },
-  {
-    id: '3',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
-    title: 'Chaveiro Personalizado com Nome',
-    category: 'Escolar 🔑',
-    price: 'R$ 18,00',
-  },
-  {
-    id: '4',
-    image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80',
-    title: 'Suporte Robô Gamer 3D',
-    category: 'Games 🎮',
-    price: 'R$ 48,00',
-  },
-];
+import React from 'react';
+import { Box, ShieldCheck, Lightbulb, Gift } from 'lucide-react';
 
 export const HeroBanner: React.FC = () => {
-  const [activeSlideIndex, setActiveSlideIndex] = useState<number>(0);
-
-  // Auto-rotação suave a cada 4.5 segundos
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveSlideIndex((prev) => (prev + 1) % SHOWCASE_SLIDES.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handlePrev = () => {
-    setActiveSlideIndex((prev) => (prev === 0 ? SHOWCASE_SLIDES.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setActiveSlideIndex((prev) => (prev + 1) % SHOWCASE_SLIDES.length);
-  };
-
-  const activeSlide = SHOWCASE_SLIDES[activeSlideIndex];
-
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200 shadow-xl shadow-indigo-100/50 p-6 sm:p-8 lg:p-10 mb-8">
-      {/* Luzes decorativas sutis de fundo */}
-      <div className="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-indigo-100/60 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-sky-100/60 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative overflow-hidden rounded-3xl bg-slate-900 border-4 border-amber-800/70 p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl text-white">
+      {/* Luzes sutis de fundo */}
+      <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
-        {/* LADO ESQUERDO: HISTÓRIA DO HEITOR PIRES */}
-        <div className="lg:col-span-7 space-y-5">
+        {/* LADO ESQUERDO: SOBRE O HEITOR */}
+        <div className="lg:col-span-7 space-y-4">
           
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-bold">
-            <Sparkles className="w-4 h-4 text-indigo-600 animate-pulse" />
-            <span>CONHEÇA O PEQUENO MAKER • HEITOR PIRES (7 ANOS)</span>
+          {/* TÍTULO PRINCIPAL: "Sobre o Heitor" */}
+          <div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-none text-white">
+              Sobre o{' '}
+              <span className="text-cyan-400 drop-shadow-[0_0_15px_rgba(56,189,248,0.4)]">
+                Heitor
+              </span>
+            </h1>
           </div>
 
-          <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-              Oi! Eu sou o Heitor! 🚀
-            </h1>
-            <p className="text-base sm:text-lg font-bold bg-gradient-to-r from-indigo-600 to-sky-600 bg-clip-text text-transparent mt-1">
+          {/* DIVISOR METÁLICO COM ENGRENAGEM */}
+          <div className="flex items-center gap-3 py-1">
+            <div className="flex-1 h-[2px] bg-gradient-to-r from-cyan-500/80 via-amber-600/80 to-transparent" />
+            <div className="w-6 h-6 rounded-full bg-amber-700/80 border border-amber-500 flex items-center justify-center text-amber-300 text-xs shadow-md">
+              ⚙️
+            </div>
+            <div className="flex-1 h-[2px] bg-gradient-to-l from-cyan-500/80 via-amber-600/80 to-transparent" />
+          </div>
+
+          {/* SUBTÍTULO E TEXTO DA MENSAGEM */}
+          <div className="space-y-3 text-slate-200 text-sm sm:text-base font-normal leading-relaxed">
+            <h3 className="text-cyan-400 font-bold text-base sm:text-lg flex items-center gap-1.5">
+              <span>✧</span> Oi! Eu sou o Heitor!
+            </h3>
+            
+            <p className="font-medium text-slate-100">
               Criando e descobrindo tudo o que podemos fazer com a Impressão 3D!
             </p>
-          </div>
 
-          {/* CARD DA MENSAGEM DO HEITOR */}
-          <div className="p-5 rounded-2xl bg-slate-50/90 border border-slate-200/90 text-slate-700 text-sm sm:text-base font-medium leading-relaxed space-y-3 shadow-inner">
-            <p>
+            <p className="text-slate-300 text-xs sm:text-sm">
               Recentemente ganhei uma impressora 3D! Desde então, estou amando criar, experimentar e descobrir todas as coisas legais que podemos fazer com ela.
             </p>
-            <p>
-              Aqui no site, você encontra modelos 3D testados e aprovados por mim, feitos para brincar, presentear, organizar e aprender. Espero que minhas criações tragam um pouquinho de diversão para o seu dia!
+
+            <p className="text-slate-300 text-xs sm:text-sm">
+              Aqui, você encontra modelos 3D testados e aprovados por mim, feitos para brincar, presentear, organizar e aprender. Espero que minhas criações tragam um pouquinho de diversão para o seu dia!
             </p>
-            <p className="font-bold text-slate-900 pt-1 border-t border-slate-200/70">
+
+            <p className="font-bold text-white text-xs sm:text-sm pt-1">
               Obrigado por apoiar o meu trabalho e o meu pequeno negócio!
             </p>
           </div>
 
-          {/* ASSINATURA E BADGES DE RECURSOS EM LINHA HARMONIOSA */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-1">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-600 text-white font-black text-sm shadow-md shadow-indigo-200">
-              <Heart className="w-4 h-4 text-pink-300 fill-pink-300 animate-pulse" />
-              <span>Com carinho, Heitor Pires</span>
-            </div>
-
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-xs">
-              <Smile className="w-4 h-4 text-indigo-600" />
-              <span>Articulados 🦖</span>
-            </div>
-
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-xs">
-              <Rocket className="w-4 h-4 text-sky-600" />
-              <span>Com Nome 🔑</span>
-            </div>
-
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-slate-700 text-xs font-bold shadow-xs">
-              <MessageCircle className="w-4 h-4 text-emerald-600" />
-              <span>WhatsApp 💬</span>
-            </div>
-          </div>
-
         </div>
 
-        {/* LADO DIREITO: SHOWCASE MODERNO & CONECTADO */}
-        <div className="lg:col-span-5 flex flex-col justify-center">
-          <div className="relative w-full rounded-3xl overflow-hidden border border-slate-200 bg-slate-950 text-white shadow-2xl group transition-all">
+        {/* LADO DIREITO: ILUSTRAÇÃO DO HEITOR E PAINEL DE RECURSOS */}
+        <div className="lg:col-span-5 flex flex-col items-center">
+          
+          {/* MOLDURA DO AVATAR DO HEITOR */}
+          <div className="relative w-full max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border-2 border-cyan-500/40 bg-slate-950/80 shadow-2xl p-2 group hover:border-cyan-400 transition-all">
+            <img
+              src="./heitor-avatar.png"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = './logo-badge.png';
+              }}
+              alt="Heitor Pires com Impressora 3D"
+              className="w-full h-auto max-h-72 object-contain rounded-xl group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+
+          {/* PAINEL INFERIOR COM OS 4 ÍCONES CYAN */}
+          <div className="w-full max-w-xs sm:max-w-sm mt-4 p-3 rounded-2xl border border-cyan-500/40 bg-slate-950/80 shadow-xl grid grid-cols-4 gap-2 text-center text-cyan-400">
             
-            {/* CABEÇALHO DO CARROSEL INTERATIVO */}
-            <div className="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="flex h-2.5 w-2.5 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                <span className="text-xs font-bold tracking-wider text-slate-300 uppercase">VITRINE 3D EM DESTAQUE</span>
-              </div>
-
-              {/* Botões de Navegação */}
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={handlePrev}
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"
-                  title="Anterior"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-all"
-                  title="Próximo"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="flex flex-col items-center justify-center p-1.5 rounded-xl hover:bg-cyan-500/10 transition-colors">
+              <Box className="w-5 h-5 text-cyan-400 mb-1" />
+              <span className="text-[9px] font-black uppercase text-white leading-tight">
+                MODELOS TESTADOS
+              </span>
             </div>
 
-            {/* ÁREA DA IMAGEM PRINCIPAL COM TRANSIÇÃO */}
-            <div className="relative w-full h-72 sm:h-80 bg-slate-900 overflow-hidden">
-              <img
-                key={activeSlide.id}
-                src={activeSlide.image}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=800&q=80';
-                }}
-                alt={activeSlide.title}
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent pointer-events-none" />
-
-              {/* LEGENDA FLUTUANTE DA PEÇA */}
-              <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md p-3 rounded-2xl text-slate-800 shadow-xl border border-white/60 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-bold text-indigo-600 block uppercase tracking-wider">
-                    {activeSlide.category}
-                  </span>
-                  <h4 className="text-xs font-black text-slate-900 line-clamp-1">
-                    {activeSlide.title}
-                  </h4>
-                </div>
-                <span className="px-2.5 py-1 rounded-xl bg-emerald-500 text-white text-xs font-black shadow-xs">
-                  {activeSlide.price}
-                </span>
-              </div>
+            <div className="flex flex-col items-center justify-center p-1.5 rounded-xl hover:bg-cyan-500/10 transition-colors">
+              <ShieldCheck className="w-5 h-5 text-cyan-400 mb-1" />
+              <span className="text-[9px] font-black uppercase text-white leading-tight">
+                APROVADOS POR MIM
+              </span>
             </div>
 
-            {/* SELETOR DE MINIATURAS (THUMBNAILS) CONECTADO */}
-            <div className="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-2 overflow-x-auto">
-              {SHOWCASE_SLIDES.map((s, idx) => {
-                const isActive = idx === activeSlideIndex;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setActiveSlideIndex(idx)}
-                    className={`relative flex-1 h-12 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
-                      isActive
-                        ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-105'
-                        : 'border-slate-800 opacity-50 hover:opacity-100'
-                    }`}
-                    title={s.title}
-                  >
-                    <img src={s.image} alt={s.title} className="w-full h-full object-cover" />
-                  </button>
-                );
-              })}
+            <div className="flex flex-col items-center justify-center p-1.5 rounded-xl hover:bg-cyan-500/10 transition-colors">
+              <Lightbulb className="w-5 h-5 text-cyan-400 mb-1" />
+              <span className="text-[9px] font-black uppercase text-white leading-tight">
+                CRIAR & APRENDER
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center p-1.5 rounded-xl hover:bg-cyan-500/10 transition-colors">
+              <Gift className="w-5 h-5 text-cyan-400 mb-1" />
+              <span className="text-[9px] font-black uppercase text-white leading-tight">
+                BRINCAR & PRESENTEAR
+              </span>
             </div>
 
           </div>
+
         </div>
 
       </div>
