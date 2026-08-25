@@ -10,8 +10,9 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
   return (
     <footer className="mt-16 w-full bg-white border-t border-slate-200 text-slate-500 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
         
+        {/* COLUNA 1: LOGO ÚNICA E BADGE SEGURANÇA */}
         <div className="space-y-3 md:col-span-2">
           <div className="flex items-center gap-3">
             <img
@@ -19,30 +20,19 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
               onError={(e) => {
                 (e.target as HTMLImageElement).src = './logo.png';
               }}
-              alt="Emblema H-Maker"
-              className="w-12 h-12 object-contain drop-shadow-xs"
+              alt="H-Maker 3D Logo"
+              className="w-14 h-14 object-contain drop-shadow-xs"
             />
-            <img
-              src="./logo-text.png"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = './logo.png';
-              }}
-              alt="H-MAKER"
-              className="h-8 w-auto object-contain drop-shadow-xs"
-            />
+            <span className="text-xl font-black text-slate-900 tracking-tight">{settings.storeName}</span>
           </div>
 
-          <p className="text-slate-600 max-w-md font-medium leading-relaxed pt-1">
-            Vitrine e gerador de orçamentos de impressões 3D sob medida pelo pequeno H-Maker (7 anos). 
-            Brinquedos articulados, chaveiros com nome e decorações incríveis!
-          </p>
-
-          <div className="flex items-center gap-2 pt-1 text-slate-500 font-bold text-[11px]">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <div className="flex items-center gap-2 text-slate-500 font-bold text-[11px] pt-1">
+            <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
             <span>Painel Administrativo com Criptografia Segura</span>
           </div>
         </div>
 
+        {/* COLUNA 2: ATENDIMENTO WHATSAPP */}
         <div className="space-y-3">
           <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Atendimento WhatsApp</h4>
           <p className="text-slate-500">Solicite orçamentos para arquivos STL próprios ou modelos da nossa vitrine.</p>
@@ -57,6 +47,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
           </a>
         </div>
 
+        {/* COLUNA 3: ÁREA DE CONTROLE (PAINEL ADMIN OCULTO) */}
         <div className="space-y-3">
           <h4 className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Área de Controle</h4>
           <ul className="space-y-2 font-medium">

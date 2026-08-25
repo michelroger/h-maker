@@ -61,14 +61,14 @@ export const HeroBanner: React.FC = () => {
         <div className="lg:col-span-5 flex flex-col items-center">
           
           {/* MOLDURA DO AVATAR DO HEITOR */}
-          <div className="relative w-full max-w-xs sm:max-w-sm rounded-2xl overflow-hidden border-2 border-cyan-500/40 bg-slate-950/80 shadow-2xl p-2 group hover:border-cyan-400 transition-all">
+          <div className="relative w-full max-w-xs sm:max-w-sm rounded-3xl overflow-hidden border-2 border-cyan-500/40 bg-slate-950/80 shadow-2xl p-3 flex items-center justify-center group hover:border-cyan-400 transition-all">
             <img
-              src="./heitor-avatar.png"
+              src="./heitor-full-badge.png"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = './logo-badge.png';
               }}
               alt="Heitor Pires com Impressora 3D"
-              className="w-full h-auto max-h-72 object-contain rounded-xl group-hover:scale-105 transition-transform duration-500"
+              className="w-full h-auto max-h-72 object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-lg"
             />
           </div>
 

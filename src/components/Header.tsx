@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShieldLock, MessageSquare, X } from 'lucide-react';
+import { Search, MessageSquare, X } from 'lucide-react';
 import type { StoreSettings } from '../types';
 
 interface HeaderProps {
@@ -12,7 +12,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   searchQuery,
   onSearchChange,
-  onOpenAdmin,
   settings,
 }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -55,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* BOTÕES DE AÇÃO E ADMIN (TOTALMENTE RESPONSIVO EM CELULAR) */}
+        {/* BOTÃO WHATSAPP E BUSCA MOBILE */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Botão de Busca Mobile */}
           <button
@@ -76,14 +75,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="hidden sm:inline">Falar no WhatsApp</span>
             <span className="sm:hidden">WhatsApp</span>
           </a>
-
-          <button
-            onClick={onOpenAdmin}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all shadow-xs hover:scale-105"
-          >
-            <ShieldLock className="w-4 h-4 text-cyan-600" />
-            <span className="hidden sm:inline">Painel Admin</span>
-          </button>
         </div>
 
       </div>
