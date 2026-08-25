@@ -40,19 +40,19 @@ export const HeroBanner: React.FC<HeroBannerProps> = () => {
           {/* SUBTÍTULO E TEXTO DA MENSAGEM */}
           <div className="space-y-3 text-slate-200 text-sm sm:text-base font-normal leading-relaxed">
             <h3 className="text-cyan-400 font-bold text-base sm:text-lg flex items-center gap-1.5">
-              <span>✧</span> Oi! Eu sou o Heitor!
+              <span>👋</span> Oi, eu sou o Heitor!
             </h3>
             
             <p className="font-medium text-slate-100">
-              Criando e descobrindo tudo o que podemos fazer com a Impressão 3D!
+              Pronto para dar vida às suas ideias? Juntos, vamos explorar o poder da Impressão 3D.
             </p>
 
             <p className="text-slate-300 text-xs sm:text-sm">
-              Recentemente ganhei uma impressora 3D! Desde então, estou amando criar, experimentar e descobrir todas as coisas legais que podemos fazer com ela.
+              Minha jornada começou com uma impressora e uma curiosidade imensa. Hoje, compartilho com você minhas melhores descobertas.
             </p>
 
             <p className="text-slate-300 text-xs sm:text-sm">
-              Aqui, você encontra modelos 3D testados e aprovados por mim, feitos para brincar, presentear, organizar e aprender. Espero que minhas criações tragam um pouquinho de diversão para o seu dia!
+              Aqui, você encontra modelos 3D testados e aprovados por mim, perfeitos para brincar, presentear, organizar e aprender. Espero que minhas criações tragam um pouco dessa diversão para o seu dia!
             </p>
 
             <p className="font-bold text-white text-xs sm:text-sm pt-1">
