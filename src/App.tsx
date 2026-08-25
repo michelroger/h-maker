@@ -12,13 +12,13 @@ import { CostCalculator } from './components/CostCalculator';
 import { Footer } from './components/Footer';
 import { AlertCircle } from 'lucide-react';
 
-const STORAGE_KEY_PRODUCTS = 'm3d_catalog_products';
-const STORAGE_KEY_SETTINGS = 'm3d_store_settings';
+const STORAGE_KEY_PRODUCTS = 'hmaker_catalog_products';
+const STORAGE_KEY_SETTINGS = 'hmaker_store_settings';
 
 export const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(() => {
     try {
-      const savedEncrypted = localStorage.getItem(STORAGE_KEY_PRODUCTS) || localStorage.getItem('mr3d_catalog_products');
+      const savedEncrypted = localStorage.getItem(STORAGE_KEY_PRODUCTS) || localStorage.getItem('m3d_catalog_products');
       if (savedEncrypted) {
         const decrypted = decryptData<Product[]>(savedEncrypted);
         if (decrypted && Array.isArray(decrypted) && decrypted.length > 0) {
@@ -39,7 +39,7 @@ export const App: React.FC = () => {
         }
       }
     } catch (err) {
-      console.warn('Usando catálogo inicial padrão.');
+      console.warn('Usando catálogo inicial padrão do H-Maker.');
     }
     return defaultCatalog as Product[];
   });
@@ -47,34 +47,35 @@ export const App: React.FC = () => {
   const [settings, setSettings] = useState<StoreSettings>(() => {
     const defaultSettings: StoreSettings = {
       whatsappNumber: '5511999999999',
-      storeName: 'M3D Maker Studio',
+      storeName: 'H-Maker 3D Studio',
       customMessageTemplate: '',
       adminPinHash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4',
-      adminSalt: 'M3D_SALT_2026',
+      adminSalt: 'HMAKER_SALT_2026',
       currencySymbol: 'R$',
       customMaterials: [
-        { id: 'pla', name: 'PLA', priceMultiplier: 1.0 },
-        { id: 'petg', name: 'PETG', priceMultiplier: 1.15 },
-        { id: 'abs', name: 'ABS', priceMultiplier: 1.1 },
-        { id: 'tpu', name: 'TPU', priceMultiplier: 1.3 },
-        { id: 'resina', name: 'Resina', priceMultiplier: 1.4 },
+        { id: 'pla', name: 'PLA Ecológico', priceMultiplier: 1.0 },
+        { id: 'silk', name: 'Silk Arco-Íris', priceMultiplier: 1.2 },
+        { id: 'petg', name: 'PETG Resistente', priceMultiplier: 1.15 },
+        { id: 'tpu', name: 'TPU Flexível', priceMultiplier: 1.3 },
+        { id: 'resina', name: 'Resina HD', priceMultiplier: 1.4 },
       ],
     };
 
     try {
-      const savedEncrypted = localStorage.getItem(STORAGE_KEY_SETTINGS) || localStorage.getItem('mr3d_store_settings');
+      const savedEncrypted = localStorage.getItem(STORAGE_KEY_SETTINGS) || localStorage.getItem('m3d_store_settings');
       if (savedEncrypted) {
         const decrypted = decryptData<StoreSettings>(savedEncrypted);
         if (decrypted && decrypted.storeName) {
           return {
             ...defaultSettings,
             ...decrypted,
+            storeName: decrypted.storeName.includes('M3D') ? 'H-Maker 3D Studio' : decrypted.storeName,
             customMaterials: decrypted.customMaterials || defaultSettings.customMaterials,
           };
         }
       }
     } catch (err) {
-      console.warn('Usando configurações padrão da loja.');
+      console.warn('Usando configurações padrão do H-Maker.');
     }
     return defaultSettings;
   });
@@ -139,7 +140,7 @@ export const App: React.FC = () => {
   }, [products, searchQuery, selectedCategory, selectedMaterial, sortBy]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       <Header
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -171,14 +172,14 @@ export const App: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="p-12 text-center rounded-3xl bg-slate-900/50 border border-slate-800 space-y-4 my-8">
-            <div className="w-12 h-12 rounded-full bg-slate-800 mx-auto flex items-center justify-center text-slate-400">
+          <div className="p-12 text-center rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 my-8">
+            <div className="w-12 h-12 rounded-full bg-indigo-50 mx-auto flex items-center justify-center text-indigo-500">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Nenhum modelo 3D encontrado</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Tente ajustar os filtros por categoria ou alterar o termo de busca.
+              <h3 className="text-base font-bold text-slate-900">Nenhum brinquedo ou peça 3D encontrada</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Tente ajustar os filtros por categoria ou digitar outro termo de busca.
               </p>
             </div>
             <button
@@ -187,7 +188,7 @@ export const App: React.FC = () => {
                 setSelectedCategory('all');
                 setSelectedMaterial('all');
               }}
-              className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs transition-all"
+              className="px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-200 transition-all hover:scale-105"
             >
               Resetar Filtros
             </button>

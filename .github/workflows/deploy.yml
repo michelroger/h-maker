@@ -1,4 +1,4 @@
-name: Deploy Mr3D para o GitHub Pages
+name: Deploy H-Maker para o GitHub Pages
 
 on:
   push:

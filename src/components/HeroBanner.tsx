@@ -1,68 +1,102 @@
 import React from 'react';
-import { Layers, ShieldCheck, Zap, Sparkles, Cpu } from 'lucide-react';
+import { Sparkles, Heart, Rocket, Smile, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export const HeroBanner: React.FC = () => {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-slate-900/90 border border-slate-800/80 p-6 sm:p-10 mb-8 shadow-2xl">
-      {/* Luzes de fundo Neon Estilo MakerWorld */}
-      <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-orange-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-sky-500 to-cyan-500 text-white p-6 sm:p-10 mb-8 shadow-xl shadow-indigo-100">
+      {/* Círculos decorativos luminosos */}
+      <div className="absolute -top-10 -right-10 w-80 h-80 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-10 -left-10 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
-        {/* TEXTO DE DESTAQUE */}
+        {/* LADO ESQUERDO: MENSAGEM DO HEITOR PIRES */}
         <div className="lg:col-span-8 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-orange-500/30 text-orange-400 text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>ESTÚDIO MAKER DE IMPRESSÃO 3D</span>
+          
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold shadow-xs">
+            <Sparkles className="w-4 h-4 text-yellow-300 animate-spin" />
+            <span>CONHEÇA O PEQUENO MAKER • HEITOR PIRES</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-            Sua ideia materializada em <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-orange-400 via-amber-300 to-cyan-400 bg-clip-text text-transparent">
-              Peças 3D de Alta Precisão
-            </span>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight drop-shadow-xs">
+            Oi! Eu sou o Heitor! 🚀
           </h1>
 
-          <p className="text-slate-300 text-sm sm:text-base max-w-2xl font-normal leading-relaxed">
-            Explore nossos modelos 3D exclusivos ou solicite a fabricação sob medida da sua própria peça. 
-            Escolha cor, dimensão, material e receba o orçamento detalhado direto no seu WhatsApp em minutos.
-          </p>
+          <div className="space-y-3 text-sky-50 text-sm sm:text-base font-medium leading-relaxed drop-shadow-xs max-w-2xl">
+            <p>
+              Recentemente ganhei uma impressora 3D! Desde então, estou amando criar, experimentar e descobrir tudo o que podemos fazer com ela.
+            </p>
+            <p>
+              Aqui no site, você encontra modelos 3D testados e aprovados por mim, feitos especialmente para brincar, presentear, organizar e aprender. Espero que você encontre algo que goste e que minhas criações tragam um pouquinho de diversão para o seu dia!
+            </p>
+            <p className="font-bold text-white">
+              Obrigado por apoiar o meu trabalho e pequeno negócio!
+            </p>
+          </div>
 
-          {/* BADGES DE RECURSOS */}
-          <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-300 font-medium">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800">
-              <Zap className="w-4 h-4 text-orange-400" />
-              <span>Orçamento via WhatsApp</span>
+          {/* CARD DE ASSINATURA DO HEITOR */}
+          <div className="pt-2 flex flex-wrap items-center gap-4">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/95 text-slate-800 font-extrabold text-sm shadow-md border border-white/40">
+              <Heart className="w-4 h-4 text-pink-500 fill-pink-500 animate-pulse" />
+              <span>Com carinho, <span className="text-indigo-600">Heitor Pires</span></span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800">
-              <Layers className="w-4 h-4 text-cyan-400" />
-              <span>PLA, PETG, ABS, Resina & TPU</span>
+
+            <div className="flex items-center gap-2 text-xs font-bold text-sky-100">
+              <CheckCircle2 className="w-4 h-4 text-yellow-300" />
+              <span>H-Maker 3D Studio</span>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800">
-              <Cpu className="w-4 h-4 text-emerald-400" />
-              <span>Preview 3D Interativo</span>
+          </div>
+
+          {/* BADGES DE RECURSOS INFANTIS */}
+          <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-slate-800 font-bold">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 border border-white/40 shadow-xs">
+              <Smile className="w-4 h-4 text-indigo-600" />
+              <span>Brinquedos Articulados 🦖</span>
+            </div>
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 border border-white/40 shadow-xs">
+              <Rocket className="w-4 h-4 text-sky-600" />
+              <span>Chaveiros com Seu Nome 🔑</span>
+            </div>
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 border border-white/40 shadow-xs">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Orçamento no WhatsApp 💬</span>
             </div>
           </div>
         </div>
 
-        {/* METRICAS / DESTAQUE VISUAL */}
+        {/* LADO DIREITO: CARDS INFORMATIVOS DO HEITOR */}
         <div className="lg:col-span-4 flex flex-col gap-3">
-          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 backdrop-blur-md flex items-center justify-between">
+          
+          <div className="p-4 rounded-2xl bg-white/15 border border-white/20 shadow-md backdrop-blur-md flex items-center justify-between hover:bg-white/20 transition-all">
             <div>
-              <span className="text-xs font-mono text-slate-400 block">PRECISÃO DA MÁQUINA</span>
-              <span className="text-xl font-bold text-white">0.08mm - 0.2mm</span>
+              <span className="text-[11px] font-bold text-sky-200 uppercase block tracking-wider">TESTADO E APROVADO</span>
+              <span className="text-lg font-black text-white">Garantia do Heitor 🦖</span>
             </div>
-            <ShieldCheck className="w-8 h-8 text-orange-400 opacity-80" />
+            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-white font-bold text-lg">
+              ✨
+            </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 backdrop-blur-md flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-white/15 border border-white/20 shadow-md backdrop-blur-md flex items-center justify-between hover:bg-white/20 transition-all">
             <div>
-              <span className="text-xs font-mono text-slate-400 block">MATERIAIS DISPONÍVEIS</span>
-              <span className="text-xl font-bold text-cyan-400">12+ Cores & Filamentos</span>
+              <span className="text-[11px] font-bold text-sky-200 uppercase block tracking-wider">MATERIAIS ECOLÓGICOS</span>
+              <span className="text-lg font-black text-yellow-300">PLA Atóxico & Seguro 🌱</span>
             </div>
-            <Layers className="w-8 h-8 text-cyan-400 opacity-80" />
+            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-yellow-300 font-bold text-lg">
+              🌿
+            </div>
           </div>
+
+          <div className="p-4 rounded-2xl bg-white/15 border border-white/20 shadow-md backdrop-blur-md flex items-center justify-between hover:bg-white/20 transition-all">
+            <div>
+              <span className="text-[11px] font-bold text-sky-200 uppercase block tracking-wider">FAÇA SEU PEDIDO</span>
+              <span className="text-lg font-black text-white">Escolha Cores & Nomes 🎨</span>
+            </div>
+            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-white font-bold text-lg">
+              💬
+            </div>
+          </div>
+
         </div>
 
       </div>

@@ -506,12 +506,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
                             onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value as ProductCategory })}
                             className="w-full bg-slate-900 text-white p-2.5 rounded-xl border border-slate-800 focus:border-orange-500 focus:outline-none"
                           >
-                            <option value="functional">Peças Úteis</option>
-                            <option value="decor">Decoração</option>
-                            <option value="geek">Geek & Action</option>
-                            <option value="cosplay">Cosplay & Props</option>
-                            <option value="organizer">Organizadores</option>
-                            <option value="mechanical">Mecânica</option>
+                            <option value="toys">Brinquedos & Articulados 🧸</option>
+                            <option value="keychains">Chaveiros & Nome 🔑</option>
+                            <option value="school">Escolar & Lápis ✏️</option>
+                            <option value="games">Games & Geek 🎮</option>
+                            <option value="decor">Decoração & Quarto 🌈</option>
+                            <option value="custom">Peças Sob Medida 🔧</option>
+                            <option value="organizer">Organizadores 📦</option>
+                            <option value="functional">Peças Úteis 🛠️</option>
                           </select>
                         </div>
 

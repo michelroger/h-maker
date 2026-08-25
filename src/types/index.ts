@@ -1,10 +1,15 @@
 export type ProductCategory = 
-  | 'functional' 
+  | 'toys'
+  | 'keychains'
+  | 'school'
   | 'decor' 
-  | 'cosplay' 
+  | 'games'
+  | 'custom'
   | 'organizer' 
-  | 'mechanical' 
+  | 'functional'
   | 'geek' 
+  | 'cosplay' 
+  | 'mechanical' 
   | 'tools';
 
 export interface CustomMaterial {

@@ -31,11 +31,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
   // Opção AMS vs Sem AMS
   const [printMode, setPrintMode] = useState<'ams' | 'standard'>('standard');
 
-  const defaultMaterial = product.availableMaterials[0] || settings.customMaterials[0]?.name || 'PLA';
+  const defaultMaterial = product.availableMaterials[0] || settings.customMaterials[0]?.name || 'PLA Ecológico';
   const [selectedMaterialName, setSelectedMaterialName] = useState<string>(defaultMaterial);
 
   const [selectedColor, setSelectedColor] = useState<ProductColor>(
-    product.availableColors[0] || { name: 'Todas as Cores / Multicolor (AMS)', hex: 'gradient' }
+    product.availableColors[0] || { name: 'Arco-Íris Silk', hex: 'gradient' }
   );
   const [scaleMultiplier, setScaleMultiplier] = useState<number>(1);
   const [infillPercent, setInfillPercent] = useState<number>(20);
@@ -70,9 +70,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
 
   const handleWhatsAppQuote = () => {
     confetti({
-      particleCount: 80,
-      spread: 70,
+      particleCount: 100,
+      spread: 80,
       origin: { y: 0.6 },
+      colors: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b'],
     });
 
     const url = generateWhatsAppLink(
@@ -95,18 +96,20 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-950/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-slate-900/60 backdrop-blur-md animate-fadeIn">
+      <div className="relative w-full max-w-4xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
         
         {/* HEADER DO MODAL */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
-          <div className="flex items-center gap-2">
-            <Box className="w-5 h-5 text-orange-400" />
-            <h2 className="text-lg font-bold text-white line-clamp-1">{product.title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">
+              <Sparkles className="w-4 h-4 text-indigo-600" />
+            </div>
+            <h2 className="text-lg font-black text-slate-900 line-clamp-1">{product.title}</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -118,16 +121,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
           {/* LADO ESQUERDO: GALERIA / VISUALIZADOR 3D */}
           <div className="lg:col-span-6 space-y-4">
             
-            <div className="relative w-full h-[360px] bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col justify-between group">
+            <div className="relative w-full h-[360px] bg-slate-50 rounded-3xl overflow-hidden border border-slate-200 shadow-xs flex flex-col justify-between group">
               
               {viewMode === '3d' ? (
                 <ThreeDViewer
                   stlUrl={product.stlUrl}
-                  colorHex={selectedColor.hex === 'gradient' ? '#FF5500' : selectedColor.hex}
+                  colorHex={selectedColor.hex === 'gradient' ? '#4F46E5' : selectedColor.hex}
                   scale={scaleMultiplier}
                 />
               ) : (
-                <div className="relative w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden">
+                <div className="relative w-full h-full bg-slate-100 flex items-center justify-center overflow-hidden">
                   <img
                     src={allImages[activeImageIndex]}
                     alt={`${product.title} - foto ${activeImageIndex + 1}`}
@@ -138,7 +141,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                     <>
                       <button
                         onClick={handlePrevImage}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-900/80 hover:bg-slate-900 border border-slate-700/60 text-white flex items-center justify-center shadow-lg transition-all"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md transition-all"
                         title="Foto Anterior"
                       >
                         <ChevronLeft className="w-5 h-5" />
@@ -146,7 +149,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
 
                       <button
                         onClick={handleNextImage}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-slate-900/80 hover:bg-slate-900 border border-slate-700/60 text-white flex items-center justify-center shadow-lg transition-all"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-md transition-all"
                         title="Próxima Foto"
                       >
                         <ChevronRight className="w-5 h-5" />
@@ -160,17 +163,17 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                 <button
                   type="button"
                   onClick={() => setViewMode(viewMode === '3d' ? 'gallery' : '3d')}
-                  className="px-3.5 py-2 rounded-xl bg-slate-900/90 backdrop-blur-md hover:bg-slate-900 border border-slate-700/80 text-white text-xs font-bold shadow-xl flex items-center gap-2 transition-all transform hover:scale-105"
+                  className="px-4 py-2 rounded-2xl bg-white/90 backdrop-blur-md hover:bg-white border border-slate-200 text-slate-800 text-xs font-bold shadow-md flex items-center gap-2 transition-all transform hover:scale-105"
                 >
                   {viewMode === '3d' ? (
                     <>
-                      <ImageIcon className="w-4 h-4 text-orange-400" />
-                      <span>📸 Ver Galeria de Fotos ({allImages.length})</span>
+                      <ImageIcon className="w-4 h-4 text-indigo-600" />
+                      <span>📸 Ver Galeria ({allImages.length})</span>
                     </>
                   ) : (
                     <>
-                      <Box className="w-4 h-4 text-cyan-400 animate-pulse" />
-                      <span>🧊 Pré-visualização 3D</span>
+                      <Box className="w-4 h-4 text-sky-500 animate-bounce" />
+                      <span>🧊 Interagir no 3D</span>
                     </>
                   )}
                 </button>
@@ -186,10 +189,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${
+                      className={`relative w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all flex-shrink-0 ${
                         isActive
-                          ? 'border-emerald-500 ring-2 ring-emerald-500/30 scale-105'
-                          : 'border-slate-800 opacity-60 hover:opacity-100 hover:border-slate-600'
+                          ? 'border-indigo-600 ring-2 ring-indigo-100 scale-105 shadow-xs'
+                          : 'border-slate-200 opacity-60 hover:opacity-100'
                       }`}
                     >
                       <img src={img} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
@@ -199,19 +202,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
               </div>
             )}
 
-            <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400 space-y-2">
-              <div className="flex justify-between items-center text-slate-300 font-mono">
-                <span>Dimensões Finais Escalonadas:</span>
-                <span className="text-orange-400 font-bold">{scaledX} × {scaledY} × {scaledZ} mm</span>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-2">
+              <div className="flex justify-between items-center font-bold">
+                <span>Dimensões Finais:</span>
+                <span className="text-indigo-600 font-mono">{scaledX} × {scaledY} × {scaledZ} mm</span>
               </div>
-              <div className="flex justify-between items-center text-slate-300 font-mono">
-                <span>Peso Estimado da Peça:</span>
-                <span>~{Math.round(product.weightGrams * scaleFactor)}g</span>
+              <div className="flex justify-between items-center font-bold">
+                <span>Peso Estimado:</span>
+                <span className="font-mono">~{Math.round(product.weightGrams * scaleFactor)}g</span>
               </div>
-              <div className="flex justify-between items-center text-slate-300 font-mono">
-                <span>Modo de Impressão:</span>
-                <span className={printMode === 'ams' ? 'text-pink-400 font-bold' : 'text-slate-300 font-bold'}>
-                  {printMode === 'ams' ? '🌈 Com AMS (Multicolor)' : '🧱 Sem AMS (Cor Única)'}
+              <div className="flex justify-between items-center font-bold">
+                <span>Impressão:</span>
+                <span className={printMode === 'ams' ? 'text-purple-600 font-bold' : 'text-slate-700 font-bold'}>
+                  {printMode === 'ams' ? '🌈 Com AMS (Multicolor)' : '🧱 Cor Única'}
                 </span>
               </div>
             </div>
@@ -221,41 +224,41 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
           {/* LADO DIREITO: OPÇÕES E PERSONALIZAÇÃO */}
           <div className="lg:col-span-6 space-y-5">
             
-            {/* SELETOR DE MODO AMS VS SEM AMS (MULTICOLOR VS MONOCROMÁTICO) */}
+            {/* SELETOR DE MODO AMS */}
             {product.supportsAMS !== false && (
               <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-cyan-400" />
-                  1. Opção de Impressão (AMS / Multicolor):
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Layers className="w-4 h-4 text-indigo-600" />
+                  1. Estilo de Cores:
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setPrintMode('standard')}
-                    className={`p-3 rounded-2xl border text-xs font-mono font-bold transition-all flex flex-col items-center gap-1 ${
+                    className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1 ${
                       printMode === 'standard'
-                        ? 'bg-slate-800 text-white border-orange-500 shadow-md ring-2 ring-orange-500/20'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
-                    <span className="text-sm">🧱 Sem AMS</span>
-                    <span className="text-[10px] text-slate-400 font-normal">Cor Única / Monocromático</span>
+                    <span className="text-sm">🧱 Cor Única</span>
+                    <span className="text-[10px] opacity-90 font-normal">Uma cor de sua escolha</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setPrintMode('ams')}
-                    className={`p-3 rounded-2xl border text-xs font-mono font-bold transition-all flex flex-col items-center gap-1 ${
+                    className={`p-3 rounded-2xl border text-xs font-bold transition-all flex flex-col items-center gap-1 ${
                       printMode === 'ams'
-                        ? 'bg-gradient-to-r from-purple-900/80 to-pink-900/80 text-white border-pink-500 shadow-lg shadow-pink-500/25 ring-2 ring-pink-500/30'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white border-purple-600 shadow-md shadow-purple-200 scale-[1.02]'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                     }`}
                   >
                     <span className="text-sm flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
-                      Com AMS
+                      <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+                      Multicolor (AMS)
                     </span>
-                    <span className="text-[10px] text-pink-300 font-normal">Multicolor / Troca Automática</span>
+                    <span className="text-[10px] opacity-90 font-normal">Mais de uma cor na peça</span>
                   </button>
                 </div>
               </div>
@@ -263,10 +266,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
 
             {/* SELETOR DE MATERIAIS */}
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
-                2. Escolha o Material do Filamento:
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                2. Material do Filamento:
               </label>
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {product.availableMaterials.map((matName) => {
                   const isSelected = selectedMaterialName.toLowerCase() === matName.toLowerCase();
                   return (
@@ -274,10 +277,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                       key={matName}
                       type="button"
                       onClick={() => setSelectedMaterialName(matName)}
-                      className={`px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all text-center border ${
+                      className={`px-3 py-2 rounded-2xl text-xs font-bold transition-all text-center border ${
                         isSelected
-                          ? 'bg-orange-500 text-white border-orange-500 shadow-md shadow-orange-500/20'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
                       {matName}
@@ -287,10 +290,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
               </div>
             </div>
 
-            {/* SELETOR DE CORES E OPÇÃO GENÉRICA TODAS AS CORES / RAINBOW */}
+            {/* SELETOR DE CORES */}
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
-                3. Cor Selecionada: <span className="text-white font-sans">{selectedColor.name}</span>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                3. Cor Principal: <span className="text-slate-800 font-bold">{selectedColor.name}</span>
               </label>
               <div className="flex flex-wrap items-center gap-3">
                 {product.availableColors.map((col, idx) => {
@@ -304,8 +307,8 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                       onClick={() => setSelectedColor(col)}
                       className={`relative w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center ${
                         isSelected
-                          ? 'border-orange-500 scale-110 shadow-lg shadow-orange-500/30'
-                          : 'border-slate-700 hover:scale-105'
+                          ? 'border-indigo-600 scale-110 shadow-md shadow-indigo-100'
+                          : 'border-slate-300 hover:scale-105'
                       }`}
                       style={{
                         background: isRainbow
@@ -324,32 +327,32 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
             {/* ESCALA DE TAMANHO */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-xs font-mono text-slate-400 uppercase tracking-wider">
-                  4. Escala do Tamanho:
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  4. Tamanho Desejado:
                 </label>
-                <span className="text-xs font-mono font-bold text-cyan-400">
+                <span className="text-xs font-bold text-indigo-600 font-mono">
                   {(scaleMultiplier * 100).toFixed(0)}%
                 </span>
               </div>
               <input
                 type="range"
                 min="0.5"
-                max="2.5"
+                max="2.0"
                 step="0.1"
                 value={scaleMultiplier}
                 onChange={(e) => setScaleMultiplier(parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+              <div className="flex justify-between text-[10px] text-slate-400 font-bold mt-1">
                 <span>50% (Mini)</span>
                 <span>100% (Padrão)</span>
-                <span>250% (Max)</span>
+                <span>200% (Grande)</span>
               </div>
             </div>
 
             {/* PREENCHIMENTO INFILL */}
             <div>
-              <label className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
                 5. Preenchimento Interno (Infill):
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -358,10 +361,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
                     key={inf}
                     type="button"
                     onClick={() => setInfillPercent(inf)}
-                    className={`py-1.5 rounded-xl text-xs font-mono transition-all border ${
+                    className={`py-1.5 rounded-xl text-xs font-bold transition-all border ${
                       infillPercent === inf
-                        ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/50'
-                        : 'bg-slate-950 text-slate-400 border-slate-800'
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                        : 'bg-slate-50 text-slate-600 border-slate-200'
                     }`}
                   >
                     {inf}% {inf === 100 ? '(Sólido)' : ''}
@@ -370,35 +373,37 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
               </div>
             </div>
 
+            {/* OBSERVAÇÃO / NOME PERSONALIZADO */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-mono text-slate-400 uppercase mb-1">Quantidade:</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Quantidade:</label>
                 <input
                   type="number"
                   min="1"
                   max="100"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-full bg-slate-950 text-white text-sm rounded-xl p-2.5 border border-slate-800 text-center font-mono font-bold focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-slate-50 text-slate-800 text-sm rounded-2xl p-2.5 border border-slate-200 text-center font-mono font-bold focus:border-indigo-500 focus:outline-none"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-mono text-slate-400 uppercase mb-1">Obs / Cores Combinadas:</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nome ou Detalhes do Pedido:</label>
                 <input
                   type="text"
-                  placeholder="Ex: Corpo vermelho com detalhes em preto..."
+                  placeholder="Ex: Nome para o chaveiro ou combinação de cores..."
                   value={customNotes}
                   onChange={(e) => setCustomNotes(e.target.value)}
-                  className="w-full bg-slate-950 text-slate-200 placeholder-slate-600 text-xs rounded-xl p-2.5 border border-slate-800 focus:border-orange-500 focus:outline-none"
+                  className="w-full bg-slate-50 text-slate-800 placeholder-slate-400 text-xs rounded-2xl p-2.5 border border-slate-200 focus:border-indigo-500 focus:outline-none font-medium"
                 />
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* VALOR ESTIMADO E BOTÃO DO WHATSAPP */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <span className="text-xs text-slate-400 block font-mono">VALOR TOTAL ESTIMADO</span>
-                <span className="text-2xl font-black text-emerald-400">
+                <span className="text-xs text-slate-400 block font-bold uppercase tracking-wider">VALOR TOTAL ESTIMADO</span>
+                <span className="text-2xl font-black text-emerald-600">
                   R$ {calculatedPrice.toFixed(2)}
                 </span>
               </div>
@@ -406,10 +411,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, se
               <button
                 type="button"
                 onClick={handleWhatsAppQuote}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-xl shadow-emerald-500/20 transform hover:scale-105 transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-200 transform hover:scale-105 transition-all"
               >
                 <MessageSquare className="w-5 h-5" />
-                <span>Solicitar no WhatsApp</span>
+                <span>Pedir no WhatsApp 💬</span>
               </button>
             </div>
 
