@@ -1,5 +1,5 @@
 import React from 'react';
-import { Rocket, Search, ShieldLock, MessageSquare, Sparkles } from 'lucide-react';
+import { Search, ShieldLock, MessageSquare, Sparkles } from 'lucide-react';
 import type { StoreSettings } from '../types';
 
 interface HeaderProps {
@@ -19,13 +19,13 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-xl border-b border-slate-200 transition-all shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
         
-        {/* LOGO & BRANDING H-MAKER */}
+        {/* LOGO & BRANDING H-MAKER OFICIAL */}
         <div className="flex items-center gap-3 cursor-pointer group">
-          <div className="relative flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-500 via-sky-500 to-cyan-400 shadow-md shadow-indigo-200 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
-            <Rocket className="w-6 h-6 text-white transform group-hover:-translate-y-0.5 transition-transform duration-300" />
-            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+          <div className="relative flex items-center justify-center w-12 h-12 group-hover:scale-105 transition-transform duration-300">
+            <img src="./logo.png" alt="H-Maker Logo" className="w-full h-full object-contain drop-shadow-sm" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-cyan-500"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
             </span>
           </div>
 
