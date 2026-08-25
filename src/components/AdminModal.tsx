@@ -325,7 +325,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
           <div className="flex items-center gap-2">
             <ShieldLock className="w-5 h-5 text-orange-400" />
-            <h2 className="text-lg font-bold text-white">Painel Administrativo M3D</h2>
+            <h2 className="text-lg font-bold text-white">Painel Administrativo H-Maker 3D</h2>
           </div>
 
           <div className="flex items-center gap-2">

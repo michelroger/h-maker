@@ -55,7 +55,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
             </li>
             <li>
               <a
-                href="https://github.com/michelroger/m3d"
+                href="https://github.com/michelroger/h-maker"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-slate-900 transition-colors flex items-center gap-1.5"
