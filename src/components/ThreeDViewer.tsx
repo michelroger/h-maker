@@ -31,6 +31,34 @@ function dataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
   return encoder.encode(text).buffer;
 }
 
+// Função infalível para escalar e pousar qualquer objeto 3D (3MF / STL) exatamente sobre a cama
+function fitAndCenterObjectOnBed(object: THREE.Object3D, targetSize: number = 3.6, bedY: number = -1.78) {
+  object.position.set(0, 0, 0);
+  object.scale.set(1, 1, 1);
+  object.updateMatrixWorld(true);
+
+  // 1. Obter dimensões originais
+  const boxOriginal = new THREE.Box3().setFromObject(object);
+  const sizeOriginal = new THREE.Vector3();
+  boxOriginal.getSize(sizeOriginal);
+
+  // 2. Aplicar escala proporcional para caber na câmera
+  const maxDim = Math.max(sizeOriginal.x, sizeOriginal.y, sizeOriginal.z);
+  const scaleFactor = maxDim > 0 ? targetSize / maxDim : 1;
+  object.scale.set(scaleFactor, scaleFactor, scaleFactor);
+  object.updateMatrixWorld(true);
+
+  // 3. Recalcular a caixa com a escala aplicada
+  const scaledBox = new THREE.Box3().setFromObject(object);
+  const scaledCenter = new THREE.Vector3();
+  scaledBox.getCenter(scaledCenter);
+
+  // 4. Centralizar em X/Z e pousar a base (min.y) exatamente no topo da cama de impressão
+  object.position.x = -scaledCenter.x;
+  object.position.z = -scaledCenter.z;
+  object.position.y = bedY - scaledBox.min.y;
+}
+
 export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
   stlUrl,
   colorHex,
@@ -62,7 +90,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight || 360;
 
-    // 1. Cenário 3D com Estilo Studio Dark MakerWorld (#1e2025)
+    // 1. Cenário 3D com Estilo Studio Dark MakerWorld (#1b1e24)
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#1b1e24');
     sceneRef.current = scene;
@@ -70,7 +98,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     // 2. Cama de Impressão 3D Estilo Bambu Lab / MakerWorld (Dark Plate com Grid)
     const bedGroup = new THREE.Group();
     
-    // Placa de metal escura da cama (25.6cm x 25.6cm equivalente)
+    // Placa de metal escura da cama
     const bedGeometry = new THREE.BoxGeometry(10, 0.1, 10);
     const bedMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#2b2f38'),
@@ -89,7 +117,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     scene.add(bedGroup);
     bedGroupRef.current = bedGroup;
 
-    // 3. Câmera com Ângulo Tridimensional
+    // 3. Câmera com Ângulo Tridimensional MakerWorld
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
     camera.position.set(0, 4.5, 9);
     camera.lookAt(0, 0, 0);
@@ -111,7 +139,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     rimLight.position.set(0, 10, -10);
     scene.add(rimLight);
 
-    // 5. Renderer WebGL com Antialias e Sombra Suave
+    // 5. Renderer WebGL com Antialias
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -159,7 +187,6 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
                 materials.forEach((mat) => {
                   if (mat && 'color' in mat) {
                     hasColorsIn3mf = true;
-                    // Ajustar reflexo e acabamento das cores originais do 3MF
                     if ('roughness' in mat) (mat as THREE.MeshStandardMaterial).roughness = 0.4;
                     if ('metalness' in mat) (mat as THREE.MeshStandardMaterial).metalness = 0.1;
                     if ('wireframe' in mat) mat.wireframe = isWireframe;
@@ -182,19 +209,8 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
             });
           }
 
-          // Centralizar e ajustar escala do 3MF na cama de impressão
-          const box = new THREE.Box3().setFromObject(group);
-          const center = new THREE.Vector3();
-          box.getCenter(center);
-          group.position.sub(center);
-          group.position.y += (box.max.y - box.min.y) / 2 - 1.8;
-
-          const size = new THREE.Vector3();
-          box.getSize(size);
-          const maxDim = Math.max(size.x, size.y, size.z);
-          const targetSize = 3.6;
-          const fitScale = maxDim > 0 ? targetSize / maxDim : 1;
-          group.scale.set(fitScale, fitScale, fitScale);
+          // Ajustar escala e pousar perfeitamente sobre a cama de impressão
+          fitAndCenterObjectOnBed(group, 3.6, -1.78);
 
           meshRef.current = group;
           scene.add(group);
@@ -207,21 +223,9 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
           geometry.center();
           geometry.computeVertexNormals();
 
-          geometry.computeBoundingBox();
-          const box = geometry.boundingBox;
-          if (box) {
-            const maxDim = Math.max(
-              box.max.x - box.min.x,
-              box.max.y - box.min.y,
-              box.max.z - box.min.z
-            );
-            const targetSize = 3.6;
-            const fitScale = maxDim > 0 ? targetSize / maxDim : 1;
-            geometry.scale(fitScale, fitScale, fitScale);
-          }
-
           const mesh = new THREE.Mesh(geometry, defaultMaterial);
-          mesh.position.set(0, -0.4, 0);
+          fitAndCenterObjectOnBed(mesh, 3.6, -1.78);
+
           meshRef.current = mesh;
           scene.add(mesh);
           setModelType('stl');
@@ -262,14 +266,14 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
       const geom = new THREE.IcosahedronGeometry(1.8, 1);
       geom.computeVertexNormals();
       const mesh = new THREE.Mesh(geom, mat);
-      mesh.position.set(0, 0, 0);
+      fitAndCenterObjectOnBed(mesh, 3.6, -1.78);
       meshRef.current = mesh;
       sc.add(mesh);
       setModelType('demo');
       setLoading(false);
     }
 
-    // Loop de Animação Suave
+    // Loop de Animação Suave (Rotaciona ao redor do centro da cama)
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
@@ -378,8 +382,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
 
   const resetView = () => {
     if (meshRef.current) {
-      meshRef.current.rotation.set(0, 0, 0);
-      meshRef.current.scale.set(1, 1, 1);
+      fitAndCenterObjectOnBed(meshRef.current, 3.6, -1.78);
     }
   };
 
