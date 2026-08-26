@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
-import { Loader2, RotateCcw, Eye, Sparkles, AlertCircle, Layers } from 'lucide-react';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Loader2, RotateCcw, Eye, Sparkles, AlertCircle, Layers, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface ThreeDViewerProps {
   stlUrl?: string;
@@ -35,9 +36,9 @@ function dataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
 function wrapAndCenterObjectOnBed(
   scene: THREE.Scene,
   rawObject: THREE.Object3D,
-  targetSize: number = 3.6,
-  bedY: number = -1.78
-): THREE.Group {
+  targetSize: number = 3.2,
+  bedY: number = -1.5
+): { containerGroup: THREE.Group; scaleFactor: number } {
   const containerGroup = new THREE.Group();
 
   // 1. Obter caixa delimitadora original do objeto
@@ -61,7 +62,7 @@ function wrapAndCenterObjectOnBed(
   containerGroup.position.set(0, bedY + scaledHeight / 2, 0);
 
   scene.add(containerGroup);
-  return containerGroup;
+  return { containerGroup, scaleFactor };
 }
 
 export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
@@ -84,10 +85,9 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
   const bedGroupRef = useRef<THREE.Group | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const materialRef = useRef<THREE.MeshStandardMaterial | null>(null);
-
-  const isDragging = useRef(false);
-  const previousMousePosition = useRef({ x: 0, y: 0 });
+  const controlsRef = useRef<OrbitControls | null>(null);
+  const initialScaleFactorRef = useRef<number>(1);
+  const defaultMaterialRef = useRef<THREE.MeshStandardMaterial | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -104,19 +104,19 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     const bedGroup = new THREE.Group();
     
     // Placa de metal escura da cama (25.6cm x 25.6cm equivalente)
-    const bedGeometry = new THREE.BoxGeometry(10, 0.1, 10);
+    const bedGeometry = new THREE.BoxGeometry(9, 0.1, 9);
     const bedMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#2b2f38'),
       roughness: 0.7,
       metalness: 0.4,
     });
     const bedMesh = new THREE.Mesh(bedGeometry, bedMaterial);
-    bedMesh.position.y = -1.85;
+    bedMesh.position.y = -1.55;
     bedGroup.add(bedMesh);
 
     // Grid discreto estilo MakerWorld
-    const gridHelper = new THREE.GridHelper(9.8, 20, 0x00f0ff, 0x4a5568);
-    gridHelper.position.y = -1.79;
+    const gridHelper = new THREE.GridHelper(8.8, 18, 0x00f0ff, 0x4a5568);
+    gridHelper.position.y = -1.49;
     bedGroup.add(gridHelper);
 
     scene.add(bedGroup);
@@ -124,15 +124,15 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
 
     // 3. Câmera com Ângulo Tridimensional MakerWorld
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 1000);
-    camera.position.set(0, 4.5, 9);
+    camera.position.set(0, 3.8, 8.5);
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
     // 4. Iluminação Studio MakerWorld (3 Pontos de Luz)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
     keyLight.position.set(6, 12, 8);
     scene.add(keyLight);
 
@@ -140,7 +140,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     fillLight.position.set(-6, -2, -6);
     scene.add(fillLight);
 
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.6);
     rimLight.position.set(0, 10, -10);
     scene.add(rimLight);
 
@@ -154,15 +154,24 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
 
     containerRef.current.appendChild(renderer.domElement);
 
+    // 6. Controles Orbitais Interativos (Zoom com Scroll + Rotação 360°)
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2 + 0.1;
+    controls.minDistance = 3;
+    controls.maxDistance = 18;
+    controlsRef.current = controls;
+
     // Material Padrão para Peças Sólidas (Efeito Filamento 3D Matte/Silk)
-    const displayColor = colorHex === 'gradient' ? '#38BDF8' : colorHex;
+    const displayColor = colorHex === 'gradient' ? '#FF5500' : colorHex;
     const defaultMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color(displayColor),
       metalness: 0.15,
       roughness: 0.35,
       wireframe: isWireframe,
     });
-    materialRef.current = defaultMaterial;
+    defaultMaterialRef.current = defaultMaterial;
 
     // Renderizar o buffer do arquivo 3D (STL ou 3MF)
     const renderModelBuffer = (buffer: ArrayBuffer, urlSource: string) => {
@@ -186,11 +195,11 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
                 mesh.geometry.computeVertexNormals();
               }
 
-              // Verificar se o arquivo 3MF já veio com materiais/cores nativas (ex: Creeper verde/preto)
+              // Verificar se o arquivo 3MF possui cores nativas de materiais ou vértices
               if (mesh.material) {
                 const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
                 materials.forEach((mat) => {
-                  if (mat && 'color' in mat) {
+                  if (mat && 'color' in mat && (mat as any).color.getHexString() !== 'ffffff') {
                     hasColorsIn3mf = true;
                     if ('roughness' in mat) (mat as THREE.MeshStandardMaterial).roughness = 0.4;
                     if ('metalness' in mat) (mat as THREE.MeshStandardMaterial).metalness = 0.1;
@@ -205,7 +214,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
 
           setHasOriginal3mfColors(hasColorsIn3mf);
 
-          // Se o 3MF NÃO veio com cores próprias, aplicar a cor escolhida pelo usuário
+          // Se o 3MF NÃO possui cores próprias no arquivo, aplicar a cor escolhida pelo usuário
           if (!hasColorsIn3mf) {
             group.traverse((child) => {
               if ((child as THREE.Mesh).isMesh) {
@@ -215,8 +224,9 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
           }
 
           // Envelopar, centralizar e pousar perfeitamente sobre a cama de impressão
-          const container = wrapAndCenterObjectOnBed(scene, group, 3.6, -1.78);
-          meshRef.current = container;
+          const { containerGroup, scaleFactor } = wrapAndCenterObjectOnBed(scene, group, 3.2, -1.5);
+          initialScaleFactorRef.current = scaleFactor;
+          meshRef.current = containerGroup;
           setModelType('3mf');
           setLoading(false);
         } else {
@@ -227,9 +237,10 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
           geometry.computeVertexNormals();
 
           const rawMesh = new THREE.Mesh(geometry, defaultMaterial);
-          const container = wrapAndCenterObjectOnBed(scene, rawMesh, 3.6, -1.78);
+          const { containerGroup, scaleFactor } = wrapAndCenterObjectOnBed(scene, rawMesh, 3.2, -1.5);
 
-          meshRef.current = container;
+          initialScaleFactorRef.current = scaleFactor;
+          meshRef.current = containerGroup;
           setModelType('stl');
           setLoading(false);
         }
@@ -265,24 +276,26 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     }
 
     function createFallbackMesh(sc: THREE.Scene, mat: THREE.MeshStandardMaterial) {
-      const geom = new THREE.IcosahedronGeometry(1.8, 1);
+      const geom = new THREE.IcosahedronGeometry(1.6, 1);
       geom.computeVertexNormals();
       const rawMesh = new THREE.Mesh(geom, mat);
-      const container = wrapAndCenterObjectOnBed(sc, rawMesh, 3.6, -1.78);
-      meshRef.current = container;
+      const { containerGroup, scaleFactor } = wrapAndCenterObjectOnBed(sc, rawMesh, 3.2, -1.5);
+      initialScaleFactorRef.current = scaleFactor;
+      meshRef.current = containerGroup;
       setModelType('demo');
       setLoading(false);
     }
 
-    // Loop de Animação Suave (Rotaciona ao redor do centro da cama)
+    // Loop de Animação Suave com Rotação e Controles Orbitais
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      if (meshRef.current && isRotating && !isDragging.current) {
+      if (meshRef.current && isRotating) {
         meshRef.current.rotation.y += 0.008;
       }
 
+      controls.update();
       renderer.render(scene, camera);
     };
 
@@ -302,29 +315,34 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
+      controls.dispose();
       if (rendererRef.current && containerRef.current) {
         containerRef.current.removeChild(rendererRef.current.domElement);
       }
     };
   }, [stlUrl]);
 
-  // Atualizar Cor caso não seja um 3MF com cores nativas salvas
+  // Atualizar Cor da Peça 3D
   useEffect(() => {
-    if (meshRef.current && !hasOriginal3mfColors) {
-      const displayColor = colorHex === 'gradient' ? '#38BDF8' : colorHex;
+    if (meshRef.current) {
+      const displayColor = colorHex === 'gradient' ? '#FF5500' : colorHex;
       const newColor = new THREE.Color(displayColor);
-      meshRef.current.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh && (child as THREE.Mesh).material) {
-          const mat = (child as THREE.Mesh).material;
-          if (Array.isArray(mat)) {
-            mat.forEach((m) => {
-              if ('color' in m) (m as THREE.MeshStandardMaterial).color.set(newColor);
-            });
-          } else if ('color' in mat) {
-            (mat as THREE.MeshStandardMaterial).color.set(newColor);
+
+      // Se não for um 3MF com cores nativas multicoloridas ativas, atualizar as cores das malhas
+      if (!hasOriginal3mfColors) {
+        meshRef.current.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh && (child as THREE.Mesh).material) {
+            const mat = (child as THREE.Mesh).material;
+            if (Array.isArray(mat)) {
+              mat.forEach((m) => {
+                if ('color' in m) (m as THREE.MeshStandardMaterial).color.set(newColor);
+              });
+            } else if ('color' in mat) {
+              (mat as THREE.MeshStandardMaterial).color.set(newColor);
+            }
           }
-        }
-      });
+        });
+      }
     }
   }, [colorHex, hasOriginal3mfColors]);
 
@@ -353,37 +371,35 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     }
   }, [showBed]);
 
-  // Atualizar Escala
+  // Atualizar Escala Multiplicadora mantendo a proporção de enquadramento correta
   useEffect(() => {
     if (meshRef.current) {
-      meshRef.current.scale.set(scale, scale, scale);
+      const baseScale = initialScaleFactorRef.current;
+      const finalScale = baseScale * scale;
+      meshRef.current.scale.set(finalScale, finalScale, finalScale);
     }
   }, [scale]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    isDragging.current = true;
-    previousMousePosition.current = { x: e.clientX, y: e.clientY };
+  const handleZoomIn = () => {
+    if (cameraRef.current && controlsRef.current) {
+      cameraRef.current.position.multiplyScalar(0.85);
+      controlsRef.current.update();
+    }
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging.current || !meshRef.current) return;
-
-    const deltaX = e.clientX - previousMousePosition.current.x;
-    const deltaY = e.clientY - previousMousePosition.current.y;
-
-    meshRef.current.rotation.y += deltaX * 0.01;
-    meshRef.current.rotation.x += deltaY * 0.01;
-
-    previousMousePosition.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
+  const handleZoomOut = () => {
+    if (cameraRef.current && controlsRef.current) {
+      cameraRef.current.position.multiplyScalar(1.15);
+      controlsRef.current.update();
+    }
   };
 
   const resetView = () => {
-    if (meshRef.current) {
+    if (meshRef.current && cameraRef.current && controlsRef.current) {
       meshRef.current.rotation.set(0, 0, 0);
+      cameraRef.current.position.set(0, 3.8, 8.5);
+      controlsRef.current.target.set(0, 0, 0);
+      controlsRef.current.update();
     }
   };
 
@@ -401,14 +417,10 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
       <div
         ref={containerRef}
         className="w-full h-full cursor-grab active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       />
 
       {/* BADGE DA PARTE SUPERIOR (MAKERWORLD STYLE) */}
-      <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-slate-700/80 flex items-center gap-2 pointer-events-none shadow-lg">
+      <div className="absolute top-3 left-3 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-slate-700/80 flex items-center gap-2 pointer-events-none shadow-lg z-10">
         {modelType === 'stl' || modelType === '3mf' ? (
           <>
             <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
@@ -420,14 +432,34 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
           <>
             <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-[11px] font-bold font-mono text-amber-300">
-              Preview 3D Interativo • Arraste para Girar
+              Preview 3D Interativo • Arraste / Zoom com Scroll
             </span>
           </>
         )}
       </div>
 
       {/* BARRA DE FERRAMENTAS E CONTROLES ESTILO MAKERWORLD */}
-      <div className="absolute bottom-3 right-3 flex items-center gap-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-700/80 shadow-xl">
+      <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-700/80 shadow-xl z-10">
+        <button
+          type="button"
+          onClick={handleZoomIn}
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+          title="Aumentar Zoom (+)"
+        >
+          <ZoomIn className="w-4 h-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={handleZoomOut}
+          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+          title="Diminuir Zoom (-)"
+        >
+          <ZoomOut className="w-4 h-4" />
+        </button>
+
+        <div className="w-[1px] h-4 bg-slate-700 mx-0.5" />
+
         <button
           type="button"
           onClick={() => setShowBed(!showBed)}
