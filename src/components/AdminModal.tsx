@@ -71,6 +71,12 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   const [newColorName, setNewColorName] = useState<string>('');
   const [newColorHex, setNewColorHex] = useState<string>('#FF5500');
 
+  // Estados de Sincronização Direta com GitHub API
+  const [githubToken, setGithubToken] = useState<string>(() => localStorage.getItem('hmaker_github_token') || '');
+  const [githubRepo, setGithubRepo] = useState<string>('michelroger/h-maker');
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [syncStatus, setSyncStatus] = useState<string>('');
+
   // Autenticação Admin
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -287,6 +293,70 @@ export const AdminModal: React.FC<AdminModalProps> = ({
     setTimeout(() => setSaveMessage(''), 3000);
   };
 
+  // Sincronizar catálogo diretamente via GitHub API
+  const handlePushToGitHub = async () => {
+    if (!githubToken.trim()) {
+      alert('Por favor, insira o seu GitHub Personal Access Token.');
+      return;
+    }
+    setIsSyncing(true);
+    setSyncStatus('🔍 Conectando com a API do GitHub...');
+
+    try {
+      const ownerRepo = githubRepo.trim() || 'michelroger/h-maker';
+      const filePath = 'src/data/catalog.json';
+      const apiUrl = `https://api.github.com/repos/${ownerRepo}/contents/${filePath}`;
+
+      // 1. Buscar o SHA do arquivo catalog.json existente no GitHub
+      const getRes = await fetch(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${githubToken.trim()}`,
+          Accept: 'application/vnd.github.v3+json',
+        },
+      });
+
+      let sha = '';
+      if (getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+      }
+
+      // 2. Converter os produtos atuais para JSON Base64 (UTF-8 seguro)
+      const jsonStr = JSON.stringify(products, null, 2);
+      const base64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+      // 3. Enviar atualização (PUT) para o GitHub
+      setSyncStatus('🚀 Enviando novo catálogo para o GitHub...');
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${githubToken.trim()}`,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `Atualização de catálogo via Painel Admin H-Maker (${products.length} itens)`,
+          content: base64Content,
+          sha: sha || undefined,
+          branch: 'main',
+        }),
+      });
+
+      if (putRes.ok) {
+        setSyncStatus('✅ SUCESSO! Catálogo atualizado no GitHub. O site será compilado e publicado para todos em ~45 segundos!');
+        confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 } });
+        localStorage.setItem('hmaker_github_token', githubToken.trim());
+      } else {
+        const errData = await putRes.json();
+        setSyncStatus(`❌ Falha no envio: ${errData.message || putRes.statusText} (Verifique as permissões do Token)`);
+      }
+    } catch (err: any) {
+      setSyncStatus(`❌ Erro de conexão: ${err.message}`);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   // Exportar Catálogo JSON
   const handleExportJSON = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(products, null, 2));
@@ -423,13 +493,14 @@ export const AdminModal: React.FC<AdminModalProps> = ({
 
               <button
                 onClick={() => setActiveTab('sync')}
-                className={`px-4 py-2.5 rounded-t-xl text-xs font-semibold transition-all border-b-2 whitespace-nowrap ${
+                className={`px-4 py-2.5 rounded-t-xl text-xs font-semibold transition-all border-b-2 whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === 'sync'
-                    ? 'border-orange-500 text-orange-400 bg-slate-900'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-cyan-500 text-cyan-400 bg-slate-900 font-bold'
+                    : 'border-transparent text-cyan-400/80 hover:text-cyan-300'
                 }`}
               >
-                Exportar / GitHub Sync
+                <UploadCloud className="w-3.5 h-3.5" />
+                <span>GitHub Sync 🚀</span>
               </button>
 
               <button
@@ -977,40 +1048,131 @@ export const AdminModal: React.FC<AdminModalProps> = ({
               {/* TAB 4: SINCRONIZAÇÃO E GITHUB */}
               {activeTab === 'sync' && (
                 <div className="space-y-6 text-xs text-slate-300">
-                  <h3 className="text-sm font-bold text-white font-mono">EXPORTAR & DEPLOY NO GITHUB PAGES</h3>
-
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                    <h4 className="font-bold text-orange-400 flex items-center gap-1.5">
-                      <Download className="w-4 h-4" />
-                      1. Exportar Catálogo JSON (`catalog.json`)
-                    </h4>
-                    <p className="text-slate-400">
-                      Baixe o arquivo de catálogo atualizado com todas as alterações para substituir na pasta <code className="text-cyan-400">src/data/catalog.json</code> antes de dar git commit.
-                    </p>
-                    <button
-                      onClick={handleExportJSON}
-                      className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-semibold flex items-center gap-2 hover:bg-slate-800"
-                    >
-                      <Download className="w-4 h-4 text-orange-400" />
-                      <span>Baixar `catalog.json`</span>
-                    </button>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white font-mono">SINCRONIZAÇÃO AUTOMÁTICA GITHUB & BACKUP</h3>
+                      <p className="text-[11px] text-slate-400">Atualize o catálogo global do site em 1-clique sem precisar de código</p>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 font-mono font-bold text-[10px]">
+                      🚀 1-CLIQUE DEPLOY
+                    </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                    <h4 className="font-bold text-cyan-400 flex items-center gap-1.5">
-                      <Upload className="w-4 h-4" />
-                      2. Importar Backup JSON
+                  {/* CAIXA PRINCIPAL: SINCRONIZAR DIRETO COM GITHUB API */}
+                  <div className="p-5 rounded-2xl bg-slate-950 border border-cyan-500/40 space-y-4 shadow-xl">
+                    <h4 className="font-bold text-cyan-400 text-sm flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-cyan-400" />
+                      <span>Sincronizar Alterações com o GitHub Pages</span>
                     </h4>
-                    <p className="text-slate-400">
-                      Restaure ou carregue um catálogo salvo anteriormente.
+
+                    <p className="text-slate-300 leading-relaxed text-xs">
+                      Sempre que você cadastrar, alterar o preço ou <strong>excluir um produto</strong>, insira seu Token do GitHub abaixo e clique no botão. O site enviará as alterações direto para o seu repositório no GitHub, e a página será republicada para todos os clientes em <strong>~45 segundos</strong>!
                     </p>
-                    <input
-                      type="file"
-                      accept=".json"
-                      onChange={handleImportJSON}
-                      className="block w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
-                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="block text-slate-400 mb-1 font-mono font-bold text-[11px]">
+                          Nome do Repositório:
+                        </label>
+                        <input
+                          type="text"
+                          value={githubRepo}
+                          onChange={(e) => setGithubRepo(e.target.value)}
+                          placeholder="michelroger/h-maker"
+                          className="w-full bg-slate-900 text-white p-2.5 rounded-xl border border-slate-800 font-mono text-xs focus:border-cyan-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-slate-400 mb-1 font-mono font-bold text-[11px]">
+                          GitHub Personal Access Token:
+                        </label>
+                        <input
+                          type="password"
+                          value={githubToken}
+                          onChange={(e) => setGithubToken(e.target.value)}
+                          placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                          className="w-full bg-slate-900 text-white p-2.5 rounded-xl border border-slate-800 font-mono text-xs focus:border-cyan-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {syncStatus && (
+                      <div className={`p-3 rounded-xl border font-mono text-xs ${
+                        syncStatus.includes('✅')
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                          : syncStatus.includes('❌')
+                          ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                          : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'
+                      }`}>
+                        {syncStatus}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                      <button
+                        type="button"
+                        disabled={isSyncing}
+                        onClick={handlePushToGitHub}
+                        className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                      >
+                        <UploadCloud className="w-4 h-4" />
+                        <span>{isSyncing ? 'Enviando para o GitHub...' : '🚀 Sincronizar Catálogo no GitHub Agora'}</span>
+                      </button>
+                    </div>
                   </div>
+
+                  {/* PASSO A PASSO PARA GERAR TOKEN DO GITHUB */}
+                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                    <h4 className="font-bold text-amber-400 text-xs font-mono uppercase tracking-wider">
+                      📌 Como criar o seu Personal Access Token no GitHub (Fácil & Grátis):
+                    </h4>
+                    <ol className="list-decimal list-inside space-y-1.5 text-slate-300 text-xs">
+                      <li>No GitHub.com, clique na sua foto de perfil (canto superior direito) e vá em <strong>Settings</strong>.</li>
+                      <li>Na barra lateral esquerda, role até o final e clique no último item: <strong>Developer Settings</strong>.</li>
+                      <li>Clique em <strong>Personal Access Tokens</strong> -&gt; <strong>Tokens (classic)</strong>.</li>
+                      <li>Clique em <strong>Generate new token (classic)</strong>.</li>
+                      <li>Dê um nome (ex: <i>H-Maker Admin Token</i>) e marque a caixinha <strong><code className="text-cyan-400">repo</code></strong> (Acesso total ao repositório).</li>
+                      <li>Clique em <strong>Generate token</strong> no final da página, copie a chave gerada e cole na caixa acima!</li>
+                    </ol>
+                  </div>
+
+                  {/* EXPORTAÇÃO E IMPORTAÇÃO MANUAL JSON */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <h4 className="font-bold text-orange-400 flex items-center gap-1.5">
+                        <Download className="w-4 h-4" />
+                        Baixar Backup JSON (`catalog.json`)
+                      </h4>
+                      <p className="text-slate-400 text-[11px]">
+                        Baixe o arquivo de catálogo atualizado para salvar no seu computador.
+                      </p>
+                      <button
+                        onClick={handleExportJSON}
+                        className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-semibold flex items-center gap-2 hover:bg-slate-800 text-xs"
+                      >
+                        <Download className="w-4 h-4 text-orange-400" />
+                        <span>Baixar `catalog.json`</span>
+                      </button>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                      <h4 className="font-bold text-cyan-400 flex items-center gap-1.5">
+                        <Upload className="w-4 h-4" />
+                        Importar Backup JSON
+                      </h4>
+                      <p className="text-slate-400 text-[11px]">
+                        Restaure ou carregue um catálogo salvo anteriormente.
+                      </p>
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportJSON}
+                        className="block w-full text-xs text-slate-400 file:mr-4 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
+                      />
+                    </div>
+                  </div>
+
                 </div>
               )}
 
