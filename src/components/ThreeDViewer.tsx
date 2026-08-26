@@ -31,32 +31,37 @@ function dataUrlToArrayBuffer(dataUrl: string): ArrayBuffer {
   return encoder.encode(text).buffer;
 }
 
-// Função infalível para escalar e pousar qualquer objeto 3D (3MF / STL) exatamente sobre a cama
-function fitAndCenterObjectOnBed(object: THREE.Object3D, targetSize: number = 3.6, bedY: number = -1.78) {
-  object.position.set(0, 0, 0);
-  object.scale.set(1, 1, 1);
-  object.updateMatrixWorld(true);
+// Função Matemática Infalível para envelopar, escalar e pousar qualquer objeto 3D sobre a cama
+function wrapAndCenterObjectOnBed(
+  scene: THREE.Scene,
+  rawObject: THREE.Object3D,
+  targetSize: number = 3.6,
+  bedY: number = -1.78
+): THREE.Group {
+  const containerGroup = new THREE.Group();
 
-  // 1. Obter dimensões originais
-  const boxOriginal = new THREE.Box3().setFromObject(object);
-  const sizeOriginal = new THREE.Vector3();
-  boxOriginal.getSize(sizeOriginal);
+  // 1. Obter caixa delimitadora original do objeto
+  const box = new THREE.Box3().setFromObject(rawObject);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  const center = new THREE.Vector3();
+  box.getCenter(center);
 
-  // 2. Aplicar escala proporcional para caber na câmera
-  const maxDim = Math.max(sizeOriginal.x, sizeOriginal.y, sizeOriginal.z);
+  // 2. Centralizar o objeto bruto em (0,0,0) dentro do container
+  rawObject.position.set(-center.x, -center.y, -center.z);
+  containerGroup.add(rawObject);
+
+  // 3. Aplicar escala proporcional para ser perfeitamente visível na câmera
+  const maxDim = Math.max(size.x, size.y, size.z);
   const scaleFactor = maxDim > 0 ? targetSize / maxDim : 1;
-  object.scale.set(scaleFactor, scaleFactor, scaleFactor);
-  object.updateMatrixWorld(true);
+  containerGroup.scale.set(scaleFactor, scaleFactor, scaleFactor);
 
-  // 3. Recalcular a caixa com a escala aplicada
-  const scaledBox = new THREE.Box3().setFromObject(object);
-  const scaledCenter = new THREE.Vector3();
-  scaledBox.getCenter(scaledCenter);
+  // 4. Pousar a base do containerGroup exatamente no topo da cama de impressão
+  const scaledHeight = size.y * scaleFactor;
+  containerGroup.position.set(0, bedY + scaledHeight / 2, 0);
 
-  // 4. Centralizar em X/Z e pousar a base (min.y) exatamente no topo da cama de impressão
-  object.position.x = -scaledCenter.x;
-  object.position.z = -scaledCenter.z;
-  object.position.y = bedY - scaledBox.min.y;
+  scene.add(containerGroup);
+  return containerGroup;
 }
 
 export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
@@ -98,7 +103,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     // 2. Cama de Impressão 3D Estilo Bambu Lab / MakerWorld (Dark Plate com Grid)
     const bedGroup = new THREE.Group();
     
-    // Placa de metal escura da cama
+    // Placa de metal escura da cama (25.6cm x 25.6cm equivalente)
     const bedGeometry = new THREE.BoxGeometry(10, 0.1, 10);
     const bedMaterial = new THREE.MeshStandardMaterial({
       color: new THREE.Color('#2b2f38'),
@@ -209,11 +214,9 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
             });
           }
 
-          // Ajustar escala e pousar perfeitamente sobre a cama de impressão
-          fitAndCenterObjectOnBed(group, 3.6, -1.78);
-
-          meshRef.current = group;
-          scene.add(group);
+          // Envelopar, centralizar e pousar perfeitamente sobre a cama de impressão
+          const container = wrapAndCenterObjectOnBed(scene, group, 3.6, -1.78);
+          meshRef.current = container;
           setModelType('3mf');
           setLoading(false);
         } else {
@@ -223,11 +226,10 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
           geometry.center();
           geometry.computeVertexNormals();
 
-          const mesh = new THREE.Mesh(geometry, defaultMaterial);
-          fitAndCenterObjectOnBed(mesh, 3.6, -1.78);
+          const rawMesh = new THREE.Mesh(geometry, defaultMaterial);
+          const container = wrapAndCenterObjectOnBed(scene, rawMesh, 3.6, -1.78);
 
-          meshRef.current = mesh;
-          scene.add(mesh);
+          meshRef.current = container;
           setModelType('stl');
           setLoading(false);
         }
@@ -265,10 +267,9 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
     function createFallbackMesh(sc: THREE.Scene, mat: THREE.MeshStandardMaterial) {
       const geom = new THREE.IcosahedronGeometry(1.8, 1);
       geom.computeVertexNormals();
-      const mesh = new THREE.Mesh(geom, mat);
-      fitAndCenterObjectOnBed(mesh, 3.6, -1.78);
-      meshRef.current = mesh;
-      sc.add(mesh);
+      const rawMesh = new THREE.Mesh(geom, mat);
+      const container = wrapAndCenterObjectOnBed(sc, rawMesh, 3.6, -1.78);
+      meshRef.current = container;
       setModelType('demo');
       setLoading(false);
     }
@@ -382,7 +383,7 @@ export const ThreeDViewer: React.FC<ThreeDViewerProps> = ({
 
   const resetView = () => {
     if (meshRef.current) {
-      fitAndCenterObjectOnBed(meshRef.current, 3.6, -1.78);
+      meshRef.current.rotation.set(0, 0, 0);
     }
   };
 
